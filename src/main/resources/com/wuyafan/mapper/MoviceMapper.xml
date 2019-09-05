@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.wuyafan.mapper.MoviceMapperDao">
+  
+     <select id="getMoviceList" parameterType="map" resultType="map">
+            select m.*,t.tname from movice m 
+          LEFT JOIN fenlei f on m.mid=f.mid
+          LEFT JOIN types  t on t.tid=f.tid
+          <where>
+             <if test="mname !=null and mname !=''  ">
+                and m.mname like concat('%',#{mname},'%')
+             </if>
+          </where>
+     
+     </select>
+  
+  <insert id="add" statementType="CALLABLE">
+         {
+		call
+		adddds(#{movie.mname},#{movie.content},#{movie.daoyan},#{movie.mdate},#{tid})
+		}
+  </insert>
+  
+  <select id="getTypesList" resultType="types" parameterType="types">
+      select * from types 
+  </select>
+  
+  
+  <select id="getTypesListById" parameterType="movice">
+       select * from movice where mid=#{mid}
+       </select>
+       
+ <select id="toupdate" parameterType="int" resultType="map">
+   select m.*,t.tname from movice m 
+          LEFT JOIN fenlei f on m.mid=f.mid
+          LEFT JOIN types  t on t.tid=f.tid
+          where m.mid=#{mid}
+          group by m.mid
+          
+ </select>
+ 
+ <update id="updateMo" parameterType="movice">
+    update movice set mname=#{mname},content=#{content},daoyan=#{daoyan},mdate=#{mdate} where mid=#{mid}
+ </update>
+ 
+ <insert id="addmiddle">
+    insert into fenlei (mid,tid) values
+    <foreach collection="tid" item="tid" separator=",">
+     (#{mid},#{tid})
+    </foreach>
+ </insert>
+       
+       <delete id="deleteAll">
+          delete from movice where mid in
+          <foreach collection="array" item="mid" open="(" separator="," close=")">
+            #{mid}
+          </foreach>
+       </delete>
+       
+  </mapper>
+  
+  
